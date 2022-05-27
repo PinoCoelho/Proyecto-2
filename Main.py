@@ -26,18 +26,47 @@ def get_font(size): # Returns Press-Start-2P in the desired size
 
 #Ventana del botón Play
 
-def play ():
+COLOR_INACTIVE = pygame.Color('green')
+COLOR_ACTIVE = pygame.Color('#FFFF66')
+FONT = get_font(27)
+
+def play():
+
+    #Input:
+
+    clock = pygame.time.Clock()
+    input_box1 = InputBox(350, 100, 140, 32)
+    input_box2 = InputBox(350, 300, 140, 32)
+    input_boxes = [input_box1, input_box2]
+
+    #Text:
+
+    text = FONT.render('INSERTE SU NOMBRE', True, "green", "black")
+    textRect = text.get_rect()
+    textRect.center = (460,50)
+
+    text2 = FONT.render('CANTIDAD DE NAVES', True, "green", "black")
+    textRect2 = text2.get_rect()
+    textRect2.center = (460,250)
+
     while True:
         screen.blit(fondo,(0,0))
 
         play_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=None, pos=(450, 400), 
-                            text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
+        PLAY_BACK = Button(image=None, pos=(450, 530), 
+                            text_input="BACK", font=get_font(40), base_color="#FFFF66", hovering_color="Green")
         PLAY_BACK.changeColor(play_mouse_pos)
         PLAY_BACK.update(screen)
 
-
+        PLAY_ACCEPT = Button(image=None, pos=(450, 400), 
+                            text_input="ACEPTAR", font=get_font(40), base_color="#FFFF66", hovering_color="Green")
+        PLAY_ACCEPT.changeColor(play_mouse_pos)
+        PLAY_ACCEPT.update(screen)
+        
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -45,19 +74,30 @@ def play ():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BACK.checkForInput(play_mouse_pos):
                     main_menu()
+            for box in input_boxes:
+                box.handle_event(event)
+
+        for box in input_boxes:
+            box.update()
+
+        
+        for box in input_boxes:
+            box.draw(screen)
+        
+        clock.tick(30)
         pygame.display.update()
 
 ######################################################################################################################################
 
 #Ventana del botón Score
 
-def score ():
+def score():
     while True:
         screen.blit(fondo,(0,0))
 
         score_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=None, pos=(450, 400), 
+        PLAY_BACK = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(score_mouse_pos)
         PLAY_BACK.update(screen)
@@ -71,6 +111,29 @@ def score ():
                     main_menu()
         pygame.display.update()
 
+
+def help():
+    while True:
+        screen.blit(fondo,(0,0))
+
+        help_mouse_pos = pygame.mouse.get_pos()
+
+        PLAY_BACK = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
+                            text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
+        PLAY_BACK.changeColor(help_mouse_pos)
+        PLAY_BACK.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BACK.checkForInput(help_mouse_pos):
+                    main_menu()
+        pygame.display.update()
+
+
+
 ##########################################################################################################################################
 
 #Ventana del menú principal
@@ -81,24 +144,22 @@ def main_menu ():
 
         menu_mouse_pos = pygame.mouse.get_pos()
 
-        menu_text = get_font(40).render("MAIN MENU", True, "black")
+        menu_text = get_font(40).render("MAIN MENU", True, "green")
         menu_rect = menu_text.get_rect(center=(450, 100))
         
         #Color anterior (#d7fcd4)
         PLAY_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 200), 
-                            text_input="PLAY", font=get_font(40), base_color="#d7fcd4", hovering_color="green")
+                            text_input="JUGAR", font=get_font(40), base_color="#FFFF66", hovering_color="green")
         OPTIONS_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Options Rect.png"), pos=(450, 350), 
-                            text_input="SCORES", font=get_font(40), base_color="White", hovering_color="green")
+                            text_input="PUNTAJES", font=get_font(40), base_color="#FFFF66", hovering_color="green")
         QUIT_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Quit Rect.png"), pos=(450, 500), 
-                            text_input="QUIT", font=get_font(40), base_color="White", hovering_color="green")
+                            text_input="AYUDA", font=get_font(40), base_color="#FFFF66", hovering_color="green")
 
         screen.blit(menu_text,menu_rect)
 
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(menu_mouse_pos)
             button.update(screen)
-
-        
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -110,9 +171,9 @@ def main_menu ():
                 if OPTIONS_BUTTON.checkForInput(menu_mouse_pos):
                     score()
                 if QUIT_BUTTON.checkForInput(menu_mouse_pos):
-                    pygame.quit()
-                    sys.exit()
+                    help()
         pygame.display.update()
+
 #################################################################################################################################################
 
 #La clase de los botones
@@ -147,8 +208,54 @@ class Button():
 		else:
 			self.text = self.font.render(self.text_input, True, self.base_color)
 
-#####################################################################################################################################################
+#################################################################################################################################################            
 
-#Llama a la función main_menu para que se inicie de primero
+#La clase del input
+
+class InputBox:
+
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = COLOR_INACTIVE
+        self.text = text
+        self.txt_surface = FONT.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            else:
+                self.active = False
+            # Change the current color of the input box.
+            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    print(self.text)
+                    self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                # Re-render the text.
+                self.txt_surface = FONT.render(self.text, True, self.color)
+
+    def update(self):
+        # Resize the box if the text is too long.
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+##################################################################################################################################################
+        
+#Llama a la función main_menu de primero
 
 main_menu()

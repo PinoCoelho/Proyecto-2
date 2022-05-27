@@ -1,5 +1,7 @@
+from pickle import FROZENSET
 import pygame
 import sys
+#from Juego import main
 
 ###############################################################################################################################
 #Parte de toda la pantalla
@@ -17,7 +19,7 @@ pygame.display.set_icon(icono)
 
 #################################################################################################################################
 
-#Obtener la funte de la letra
+#Obtener la fuente de la letra
 
 def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font("Proyecto 2/Proyecto-2/Images/font.ttf", size)
@@ -26,6 +28,7 @@ def get_font(size): # Returns Press-Start-2P in the desired size
 
 #Ventana del botón Play
 
+  #De la clase Input 
 COLOR_INACTIVE = pygame.Color('green')
 COLOR_ACTIVE = pygame.Color('#FFFF66')
 FONT = get_font(27)
@@ -74,6 +77,8 @@ def play():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BACK.checkForInput(play_mouse_pos):
                     main_menu()
+                if PLAY_ACCEPT.checkForInput(play_mouse_pos):
+                    main()
             for box in input_boxes:
                 box.handle_event(event)
 

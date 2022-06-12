@@ -1,7 +1,10 @@
 from pickle import FROZENSET
 import pygame
 import sys
-#from Juego import main
+import json
+import csv
+from Prueba import *
+
 
 ###############################################################################################################################
 #Parte de toda la pantalla
@@ -12,17 +15,17 @@ pygame.font.init()
 screen = pygame.display.set_mode((900,600))
 pygame.display.set_caption("BATTLESHIP")
 
-fondo = pygame.image.load("Proyecto 2\Proyecto-2\Images\Fondo.jpg")
+fondo = pygame.image.load("Images\Fondo.jpg")
 
-icono = pygame.image.load("Proyecto 2\Proyecto-2\Images\Fondo.jpg")
+icono = pygame.image.load("Images\Fondo.jpg")
 pygame.display.set_icon(icono)
 
 #################################################################################################################################
 
 #Obtener la fuente de la letra
 
-def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("Proyecto 2/Proyecto-2/Images/font.ttf", size)
+def get_font(size): 
+    return pygame.font.Font("Images/font.ttf", size)
 
 #################################################################################################################################
 
@@ -97,16 +100,28 @@ def play():
 #Ventana del botón Score
 
 def score():
+
     while True:
         screen.blit(fondo,(0,0))
 
         score_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
+        PLAY_BACK = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 500), 
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(score_mouse_pos)
         PLAY_BACK.update(screen)
 
+            
+        with open("archivojson.json") as lider:
+            high = json.load(lider)
+            contador = 0
+            for h in high:
+                if contador < 5:
+                    score = get_font(20).render(h["Jugador"] + ": Puntuacion ---> " + h["Puntuacion"],True,"green")
+                    score_rect = score.get_rect(center=(500, 100))
+                    screen.blit (score,score_rect)
+                contador = contador + 1
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -123,7 +138,7 @@ def help():
 
         help_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
+        PLAY_BACK = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 500), 
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(help_mouse_pos)
         PLAY_BACK.update(screen)
@@ -153,11 +168,11 @@ def main_menu ():
         menu_rect = menu_text.get_rect(center=(450, 100))
         
         #Color anterior (#d7fcd4)
-        PLAY_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Play Rect.png"), pos=(450, 200), 
+        PLAY_BUTTON = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 200), 
                             text_input="JUGAR", font=get_font(40), base_color="#FFFF66", hovering_color="green")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Options Rect.png"), pos=(450, 350), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("Images\Options Rect.png"), pos=(450, 350), 
                             text_input="PUNTAJES", font=get_font(40), base_color="#FFFF66", hovering_color="green")
-        QUIT_BUTTON = Button(image=pygame.image.load("Proyecto 2\Proyecto-2\Images\Quit Rect.png"), pos=(450, 500), 
+        QUIT_BUTTON = Button(image=pygame.image.load("Images\Quit Rect.png"), pos=(450, 500), 
                             text_input="AYUDA", font=get_font(40), base_color="#FFFF66", hovering_color="green")
 
         screen.blit(menu_text,menu_rect)
@@ -216,6 +231,8 @@ class Button():
 #################################################################################################################################################            
 
 #La clase del input
+def Tiempo_User (self,tiempo, usuario):
+    archivo.SaveScores(self,minute=tiempo,user=usuario)
 
 class InputBox:
 
@@ -239,7 +256,13 @@ class InputBox:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
-                    print(self.text)
+                    #print(self.text)
+                    #with open ("nombres.json","w",newline='') as f:
+                        #json.dump(self.text, f)
+                    #guardarPuntaje(3,4,user=self.text)
+                    #Tiempo_User(self,45,self.text)
+                    with open("archivojson.json", 'w') as file:
+                        json.dump(self.text, file)
                     self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -252,7 +275,8 @@ class InputBox:
         # Resize the box if the text is too long.
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
-
+        
+        
     def draw(self, screen):
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
@@ -260,7 +284,42 @@ class InputBox:
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 ##################################################################################################################################################
-        
+
+class archivo:
+
+    def __init__(self):
+        pass
+
+    def SaveScores(self, minute,user):
+        self.user = user
+        self.tiempo = minute
+        self.lista = []
+        with open("puntajeJugadores.csv", newline='') as File:
+            reader = csv.reader(File)
+            self.lista.append([self.user,self.tiempo])
+            for row in reader:
+                if len(row) > 0:
+                    if self.user != row[0]:
+                        self.lista.append(row)
+        writer = csv.writer(open('puntajeJugadores.csv', 'w'), delimiter=",")
+        writer.writerows(self.lista) 
+
+    def LoadScores(self, user):
+        self.user = user
+        with open("puntajeJugadores.csv", newline='') as File:
+            reader = csv.reader(File)
+            for row in reader:
+                if len(row) > 0:
+                    if self.user == row[0]:
+                        self.puntuacionAlta = int(row[1])
+                        self.puntos = int(row[2])
+                        if 1 == 1:
+                            self.puntos = 0
+                        else:
+                            self.puntos = int(row[2])
+
 #Llama a la función main_menu de primero
 
-main_menu()
+
+if __name__ == "__main__": 
+    main_menu()

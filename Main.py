@@ -111,7 +111,22 @@ def score():
         PLAY_BACK.changeColor(score_mouse_pos)
         PLAY_BACK.update(screen)
 
-            
+        datos = {}
+        datos["lider"] = []
+        lista = []
+        puntos = []
+        with open("puntajeJugadores.csv", newline='') as File:
+            reader = csv.reader(File)
+            for row in reader:
+                if len(row) > 0:
+                    if row[0] != "":
+                        puntos.append([row[0], row[1]])
+        for lis in lista:
+            for row in puntos:
+                if len(row) > 0:
+                    if int(row[1]) == lis:
+                        datos["lider"].append({"Jugador": row[0], "Puntuacion": row[1]})
+                        
         with open("archivojson.json") as lider:
             high = json.load(lider)
             contador = 0
@@ -120,7 +135,7 @@ def score():
                     score = get_font(20).render(h["Jugador"] + ": Puntuacion ---> " + h["Puntuacion"],True,"green")
                     score_rect = score.get_rect(center=(500, 100))
                     screen.blit (score,score_rect)
-                contador = contador + 1
+                contador = contador + 1  
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -259,10 +274,7 @@ class InputBox:
                     #print(self.text)
                     #with open ("nombres.json","w",newline='') as f:
                         #json.dump(self.text, f)
-                    #guardarPuntaje(3,4,user=self.text)
-                    #Tiempo_User(self,45,self.text)
-                    with open("archivojson.json", 'w') as file:
-                        json.dump(self.text, file)
+                    Tiempo_User(self,45,self.text)
                     self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]

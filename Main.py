@@ -1,8 +1,8 @@
 from pickle import FROZENSET
 import pygame
-import sys
-import json
-import csv
+from sys import exit
+#import json
+#import csv
 from Prueba import *
 
 
@@ -43,7 +43,8 @@ def play():
     clock = pygame.time.Clock()
     input_box1 = InputBox(350, 100, 140, 32)
     input_box2 = InputBox(350, 300, 140, 32)
-    input_boxes = [input_box1, input_box2]
+    input_boxes_2 = [input_box2]
+    input_boxes = [input_box1]
 
     #Text:
 
@@ -85,11 +86,20 @@ def play():
             for box in input_boxes:
                 box.handle_event(event)
 
+            for box in input_boxes_2:
+                box.handle_event_2(event)
+
         for box in input_boxes:
+            box.update()
+
+        for box in input_boxes_2:
             box.update()
 
         
         for box in input_boxes:
+            box.draw(screen)
+
+        for box in input_boxes_2:
             box.draw(screen)
         
         clock.tick(30)
@@ -111,32 +121,13 @@ def score():
         PLAY_BACK.changeColor(score_mouse_pos)
         PLAY_BACK.update(screen)
 
-        datos = {}
-        datos["lider"] = []
-        lista = []
-        puntos = []
-        with open("puntajeJugadores.csv", newline='') as File:
-            reader = csv.reader(File)
-            for row in reader:
-                if len(row) > 0:
-                    if row[0] != "":
-                        puntos.append([row[0], row[1]])
-        for lis in lista:
-            for row in puntos:
-                if len(row) > 0:
-                    if int(row[1]) == lis:
-                        datos["lider"].append({"Jugador": row[0], "Puntuacion": row[1]})
-                        
-        with open("archivojson.json") as lider:
-            high = json.load(lider)
-            contador = 0
-            for h in high:
-                if contador < 5:
-                    score = get_font(20).render(h["Jugador"] + ": Puntuacion ---> " + h["Puntuacion"],True,"green")
-                    score_rect = score.get_rect(center=(500, 100))
-                    screen.blit (score,score_rect)
-                contador = contador + 1  
-        
+        fichero = open('score.txt')
+        caracter = fichero.read()
+        score = get_font(20).render(caracter,True,"green")
+        score_rect = score.get_rect(center=(450, 100))
+        screen.blit (score,score_rect)
+         
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -157,6 +148,10 @@ def help():
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(help_mouse_pos)
         PLAY_BACK.update(screen)
+
+        help_text = get_font(30).render("Hola",True,"green")
+        help_rect = help_text.get_rect(center=(450, 100))
+        screen.blit (help_text,help_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -179,7 +174,7 @@ def main_menu ():
 
         menu_mouse_pos = pygame.mouse.get_pos()
 
-        menu_text = get_font(40).render("MAIN MENU", True, "green")
+        menu_text = get_font(40).render("BATTLESHIP", True, "green")
         menu_rect = menu_text.get_rect(center=(450, 100))
         
         #Color anterior (#d7fcd4)
@@ -246,8 +241,12 @@ class Button():
 #################################################################################################################################################            
 
 #La clase del input
-def Tiempo_User (self,tiempo, usuario):
-    archivo.SaveScores(self,minute=tiempo,user=usuario)
+def Tiempo_User (tiempo, usuario):
+    fichero = open("score.txt", 'a')
+    lista = ["Usuario: " + usuario + " Tiempo: " + (str(tiempo))]
+    for linea in lista:
+        fichero.write(linea + '\n')
+    fichero.close()
 
 class InputBox:
 
@@ -274,7 +273,32 @@ class InputBox:
                     #print(self.text)
                     #with open ("nombres.json","w",newline='') as f:
                         #json.dump(self.text, f)
-                    Tiempo_User(self,45,self.text)
+                    Tiempo_User(45,self.text)
+                    self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                # Re-render the text.
+                self.txt_surface = FONT.render(self.text, True, self.color)
+
+    def handle_event_2(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            else:
+                self.active = False
+            # Change the current color of the input box.
+            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    #print(self.text)
+                    #with open ("nombres.json","w",newline='') as f:
+                        #json.dump(self.text, f)
+                    #Tiempo_User(45,self.text)
                     self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -296,7 +320,7 @@ class InputBox:
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 ##################################################################################################################################################
-
+"""
 class archivo:
 
     def __init__(self):
@@ -329,9 +353,9 @@ class archivo:
                             self.puntos = 0
                         else:
                             self.puntos = int(row[2])
+"""
 
 #Llama a la función main_menu de primero
-
 
 if __name__ == "__main__": 
     main_menu()

@@ -1,100 +1,57 @@
-import json, csv
+import json,csv
+import pygame
 
-# funcion para guardar las puntuaciones de los jugadores
-def guardarPuntaje(sc, hs, user):
-    user = user
-    sc = sc
-    hs = hs
-    lista = []
-    imprimir = "imprime"
-    with open("puntajeJugadores.csv", newline='') as File:
-        reader = csv.reader(File)
-        lista.append([user, hs, sc])
-        for row in reader:
-            if len(row) > 0:
-                if user != row[0]:
-                    lista.append(row)
-                    if imprimir == "no":
-                        imprimir = "no"
-                    else:
-                        imprimir = "imprime"
-                if hs < int(row[1]) and user == row[0]:
-                    imprimir = "no"
-    if imprimir == "imprime":
-        writer = csv.writer(open('puntajeJugadores.csv', 'w'), delimiter=",")
-        writer.writerows(lista)
+"""
+with open("archivojson.json") as lider:
+            high = json.load(lider)
+            contador = 0
+            for h in high:
+                if contador < 5:
+                    score = get_font(20).render(h["Jugador"] + ": Puntuacion ---> " + h["Puntuacion"],True,"green")
+                    score_rect = score.get_rect(center=(500, 100))
+                    screen.blit (score,score_rect)
+                contador = contador + 1
 
-#guardarPuntaje(1,7,"Ruben")
-#guardarPuntaje(2,9,"Monica")
-#guardarPuntaje(3,16,"Flor")
-#guardarPuntaje(4,32,"Allan")
-#guardarPuntaje(5,20,"Kendall")
-#guardarPuntaje(6,5,"Pino")
-#guardarPuntaje(7,64,"Aaron")
+def Tiempo_User (self,tiempo, usuario):
+    archivo.SaveScores(self,minute=tiempo,user=usuario)
 
+"""
 
-# funcion para cargar los puntajes más altos de los jugadores
-def verPuntaje(user):
-    user = user
-    nuser = " "
-    npuntos = " "
-    with open("puntajeJugadores.csv", newline='') as File:
-        reader = csv.reader(File)
-        for row in reader:
-            if len(row) > 0:
-                if user == row[0]:
-                    nuser = row[0]
-                    npuntos = row[1]
-    #print("El puntaje de "+nuser+" es: "+ npuntos)
+import pygame
+import sys
 
-verPuntaje("Allan")
-verPuntaje("Flor")
+pygame.init()
 
-# Creamos la lista de diccionarios
-datos = {}
-datos["lider"] = []
-lista = []
-# Abrimos el archivo csv para escribir cada columna de la puntuacion alta en una lista
-with open("puntajeJugadores.csv", newline='') as File:
-    reader = csv.reader(File)
-    for row in reader:
-        if len(row) > 0 and row[0] != "":
-            lista += [(int(row[1]))]
-# Ordenamos esa lista de nemor a mayor y la invertimos para obtener la puntuacion mas alta
-lista.sort()
-lista.reverse()
-#print(lista)
+window = pygame.display.set_mode((900,600))
+pygame.display.set_caption("BATTLESHIP")
+BG = pygame.image.load("Images\Fondo.jpg")
 
-# Abrimos el archivo, leemos el jugador y la puntuacion  y lo ingresamos en una lista
-puntos = []
-with open("puntajeJugadores.csv", newline='') as File:
-    reader = csv.reader(File)
-    for row in reader:
-        if len(row) > 0:
-            if row[0] != "":
-                puntos.append([row[0], row[1]])
+done = False
+secs = 0
+mins = 0
+hours = 0
 
-print(puntos)
+font = pygame.font.Font("freesansbold.ttf",32)
+text = font.render("{}:{}:{}".format(hours,mins,secs),True,(255,255,255),(0,0,0))
+textRect = text.get_rect()
+textRect.center = 500//2,500//2
 
-# Recorremos la lista ordenada y la lista desordenada para guardar en una lista de diccionarios la puntuacion mas alta
-for lis in lista:
-    for row in puntos:
-        if len(row) > 0:
-            if int(row[1]) == lis:
-                datos["lider"].append({"Jugador": row[0], "Puntuacion": row[1]})
+clock = pygame.time.Clock()
 
-print(datos)
+while not done:
+    clock.tick(1)
+    secs += 1
+    window.blit(text,textRect)
+    if secs == 60:
+        secs = 0
+        mins += 1
+    if mins == 60:
+        mins = 0
+        secs = 0
+        hours == 1
+    text = font.render("{}:{}:{}".format(hours,mins,secs),True,(255,255,255),(0,0,0))
 
-# Abrimos el archivo con JSON y escribimos el diccionario
-with open("archivojson.json", 'w') as file:
-    json.dump(datos["lider"], file)
-
-# Escribimos en las listbox los primeros 5 jugadores con puntuacion alta
-def ranking ():
-    with open("archivojson.json") as lider:
-        high = json.load(lider)
-        contador = 0
-        for h in high:
-            if contador < 5:
-                json.load(h["Jugador"] + ": Puntuacion ---> " + h["Puntuacion"])
-            contador = contador + 1
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit()
+    pygame.display.update()

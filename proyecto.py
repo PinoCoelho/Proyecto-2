@@ -38,7 +38,8 @@ while animation:
     #track user 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            animation == False 
+            animation == False
+            quit() 
 
     #USER PRESSES KEY ON KEYBOARD 
         if event.type == pygame.KEYDOWN:

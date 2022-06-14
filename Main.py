@@ -15,9 +15,9 @@ pygame.font.init()
 screen = pygame.display.set_mode((900,600))
 pygame.display.set_caption("BATTLESHIP")
 
-fondo = pygame.image.load("Images\Fondo.jpg")
+fondo = pygame.image.load("Proyecto-2\Images\Fondo.jpg")
 
-icono = pygame.image.load("Images\Fondo.jpg")
+icono = pygame.image.load("Proyecto-2\Images\Fondo.jpg")
 pygame.display.set_icon(icono)
 
 #################################################################################################################################
@@ -25,7 +25,7 @@ pygame.display.set_icon(icono)
 #Obtener la fuente de la letra
 
 def get_font(size): 
-    return pygame.font.Font("Images/font.ttf", size)
+    return pygame.font.Font("Proyecto-2/Images/font.ttf", size)
 
 #################################################################################################################################
 
@@ -116,12 +116,12 @@ def score():
 
         score_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 500), 
+        PLAY_BACK = Button(image=pygame.image.load("Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(score_mouse_pos)
         PLAY_BACK.update(screen)
 
-        fichero = open('score.txt')
+        fichero = open('Proyecto-2\score.txt')
         caracter = fichero.read()
         score = get_font(20).render(caracter,True,"green")
         score_rect = score.get_rect(center=(450, 100))
@@ -142,16 +142,24 @@ def help():
     while True:
         screen.blit(fondo,(0,0))
 
+        info = pygame.image.load("Proyecto-2\Images\Informacion2.jpg")
+        ayuda = pygame.image.load("Proyecto-2\Images\Ayuda.jpg")
+
+        screen.blit(info,(30,120))
+
+        screen.blit(ayuda,(490,120))
+
         help_mouse_pos = pygame.mouse.get_pos()
 
-        PLAY_BACK = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 500), 
+        PLAY_BACK = Button(image=pygame.image.load("Proyecto-2\Images\Play Rect.png"), pos=(450, 500), 
                             text_input="BACK", font=get_font(40), base_color="White", hovering_color="Green")
         PLAY_BACK.changeColor(help_mouse_pos)
         PLAY_BACK.update(screen)
 
-        help_text = get_font(30).render("Hola",True,"green")
-        help_rect = help_text.get_rect(center=(450, 100))
-        screen.blit (help_text,help_rect)
+        help_text = get_font(40).render("INFORMACION Y AYUDA", True, "green")
+        help_rect = help_text.get_rect(center=(450, 80))
+
+        screen.blit(help_text,help_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -178,11 +186,11 @@ def main_menu ():
         menu_rect = menu_text.get_rect(center=(450, 100))
         
         #Color anterior (#d7fcd4)
-        PLAY_BUTTON = Button(image=pygame.image.load("Images\Play Rect.png"), pos=(450, 200), 
+        PLAY_BUTTON = Button(image=pygame.image.load("Proyecto-2\Images\Play Rect.png"), pos=(450, 200), 
                             text_input="JUGAR", font=get_font(40), base_color="#FFFF66", hovering_color="green")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("Images\Options Rect.png"), pos=(450, 350), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("Proyecto-2\Images\Options Rect.png"), pos=(450, 350), 
                             text_input="PUNTAJES", font=get_font(40), base_color="#FFFF66", hovering_color="green")
-        QUIT_BUTTON = Button(image=pygame.image.load("Images\Quit Rect.png"), pos=(450, 500), 
+        QUIT_BUTTON = Button(image=pygame.image.load("Proyecto-2\Images\Quit Rect.png"), pos=(450, 500), 
                             text_input="AYUDA", font=get_font(40), base_color="#FFFF66", hovering_color="green")
 
         screen.blit(menu_text,menu_rect)
@@ -320,40 +328,6 @@ class InputBox:
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 ##################################################################################################################################################
-"""
-class archivo:
-
-    def __init__(self):
-        pass
-
-    def SaveScores(self, minute,user):
-        self.user = user
-        self.tiempo = minute
-        self.lista = []
-        with open("puntajeJugadores.csv", newline='') as File:
-            reader = csv.reader(File)
-            self.lista.append([self.user,self.tiempo])
-            for row in reader:
-                if len(row) > 0:
-                    if self.user != row[0]:
-                        self.lista.append(row)
-        writer = csv.writer(open('puntajeJugadores.csv', 'w'), delimiter=",")
-        writer.writerows(self.lista) 
-
-    def LoadScores(self, user):
-        self.user = user
-        with open("puntajeJugadores.csv", newline='') as File:
-            reader = csv.reader(File)
-            for row in reader:
-                if len(row) > 0:
-                    if self.user == row[0]:
-                        self.puntuacionAlta = int(row[1])
-                        self.puntos = int(row[2])
-                        if 1 == 1:
-                            self.puntos = 0
-                        else:
-                            self.puntos = int(row[2])
-"""
 
 #Llama a la función main_menu de primero
 
